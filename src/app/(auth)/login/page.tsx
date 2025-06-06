@@ -1,74 +1,35 @@
-"use client";
-
-import { useActionState, useEffect } from "react";
-import { loginUser, LoginFormState } from "./action";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { GoogleSignIn } from "@/components/auth/GoogleSignIn";
+import { GithubSignIn } from "@/components/auth/GithubSignIn";
+import LoginForm from "./loginForm";
 
 export default function LoginPage() {
-  const initialState: LoginFormState = {
-    errors: {},
-    values: { email: "sert@sert.com", password: "123456" },
-  };
-  const router = useRouter();
 
-  const [state, formAction] = useActionState(loginUser, initialState);
-  console.log("state>> ", state)
-  useEffect(() => {
-    if (state.success) {
-      router.replace("/profile");
-    }
-  }, [state.success, router]);
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form
-        action={formAction}
-        className="bg-white p-6 shadow rounded space-y-4 w-full max-w-sm"
-      >
-        <h1 className="text-xl font-bold text-center">Login</h1>
-
-        <div>
-          <label>Email</label>
-          <input
-            name="email"
-            type="email"
-            className="border p-2 w-full rounded"
-            defaultValue={state.values?.email}
-          />
-          {state.errors?.email && (
-            <p className="text-red-500">{state.errors.email}</p>
-          )}
+    <main className="flex items-center justify-center min-h-screen p-6 bg-gray-50 dark:bg-neutral-950 bg-[url('/images/bg.jpg')] bg-cover bg-center bg-no-repeat">
+      <div className="flex flex-col w-full max-w-4xl">
+        {/* Page Title aligned left inside the card */}
+        <div className="px-6 pt-6">
+          <h1 className="text-3xl font-bold text-white">LOGIN</h1>
         </div>
+        <div className="flex flex-col md:flex-row w-full rounded-lg shadow-lg overflow-hidden">
+          {/* Social Login Section */}
+          <div className="flex flex-col justify-center gap-4 bg-[#1e1e1e] text-white p-6 md:p-8 w-full md:w-1/2">
+            <h2 className="text-2xl font-bold mb-4">Login with Social</h2>
+            <GoogleSignIn />
+            <GithubSignIn />
+            <p className="mt-4 text-xs text-gray-400">
+              By logging in, you agree to our Terms of Service.
+            </p>
+          </div>
 
-        <div>
-          <label>Password</label>
-          <input
-            name="password"
-            type="password"
-            className="border p-2 w-full rounded"
-             defaultValue={state.values?.password}
-          />
-          {state.errors?.password && (
-            <p className="text-red-500">{state.errors.password}</p>
-          )}
+          {/* Email Login Section */}
+          <div className="flex flex-col justify-center gap-4 bg-white dark:bg-neutral-900 p-6 md:p-8 w-full md:w-1/2">
+            <LoginForm />
+          </div>
         </div>
-        {state.errors?.general && (
-          <p className="text-red-500">{state.errors.general}</p>
-        )}
-
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded w-full"
-        >
-          Login
-        </button>
-        <p className="text-center text-sm text-gray-600">
-          Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-blue-500 hover:underline">
-            Register here
-          </Link>
-        </p>
-      </form>
-    </div>
+      </div>
+    </main>
   );
 }
+
+

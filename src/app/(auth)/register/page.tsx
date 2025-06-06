@@ -1,23 +1,10 @@
 "use client";
 
 import { useActionState } from "react";
-import { useFormStatus } from "react-dom";
-import { registerUser } from "./action";import { AuthFormState } from "@/types/auth.type";
-;
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button
-      type="submit"
-      className="bg-blue-500 text-white px-4 py-2 rounded w-full disabled:bg-gray-400"
-      disabled={pending}
-    >
-      {pending ? "Registering..." : "Register"}
-    </button>
-  );
-}
-
+import { registerUser } from "./action";
+import { AuthFormState } from "@/types/auth.type";
+import FormInput from "@/components/form/FormInput";
+import { SubmitButton } from "@/components/form/SubmitButton";
 export default function RegisterPage() {
   const initialState: AuthFormState = {
     errors: {},
@@ -30,64 +17,46 @@ export default function RegisterPage() {
     <div className="flex justify-center items-center min-h-screen">
       <div className="bg-white shadow-md rounded p-6 w-full max-w-md space-y-4">
         <h1 className="text-xl font-bold text-center">Register</h1>
-
-        {state.errors.general && (
-          <p className="text-red-500">{state.errors.general}</p>
-        )}
-
         <form action={formAction} className="space-y-4">
-          <div>
-            <label>Username</label>
-            <input
-              name="name"
-              className="border p-2 w-full rounded"
-              defaultValue={state.values.name}
-            />
-            {state.errors.name && (
-              <p className="text-red-500">{state.errors.name}</p>
-            )}
-          </div>
+          <FormInput
+            name="name"
+            type="text"
+            label="Username"
+            placeholder="Enter your username"
+            error={state.errors?.name}
+          />
+          <FormInput
+            name="email"
+            type="email"
+            label="Email"
+            placeholder="Enter your email"
+            error={state.errors?.email}
+          />
+          <FormInput
+            name="password"
+            type="password"
+            label="Password"
+            placeholder="Enter your password"
+            error={state.errors?.password}
+          />
+          <FormInput
+            name="confirmPassword"
+            type="password"
+            label="Confirm Password"
+            placeholder="Confirm your password"
+            error={state.errors?.confirmPassword}
+          />
 
-          <div>
-            <label>Email</label>
-            <input
-              name="email"
-              type="email"
-              className="border p-2 w-full rounded"
-              defaultValue={state.values.email}
-            />
-            {state.errors.email && (
-              <p className="text-red-500">{state.errors.email}</p>
-            )}
-          </div>
-
-          <div>
-            <label>Password</label>
-            <input
-              name="password"
-              type="password"
-              className="border p-2 w-full rounded"
-              defaultValue={state.values.password}
-            />
-            {state.errors.password && (
-              <p className="text-red-500">{state.errors.password}</p>
-            )}
-          </div>
-
-          <div>
-            <label>Confirm Password</label>
-            <input
-              name="confirmPassword"
-              type="password"
-              className="border p-2 w-full rounded"
-              defaultValue={state.values.confirmPassword}
-            />
-            {state.errors.confirmPassword && (
-              <p className="text-red-500">{state.errors.confirmPassword}</p>
-            )}
-          </div>
-
-          <SubmitButton />
+          <SubmitButton text="Register" />
+          <p className="text-center text-gray-600">
+            Already have an account?{" "}
+            <a href="/login" className="text-gray-800 hover:underline">
+              Login
+            </a>
+          </p>
+          {state.errors.general && (
+            <p className="text-red-500">{state.errors.general}</p>
+          )}
         </form>
       </div>
     </div>

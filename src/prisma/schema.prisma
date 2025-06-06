@@ -9,25 +9,28 @@ datasource db {
 
 model User {
   id            String          @id @default(cuid())
-  name          String?
+  name          String?        @unique
   email         String?         @unique
   password      String?
   emailVerified DateTime?
   image         String?
   roleId        String?
-  role          Role?           @relation(fields: [roleId], references: [id])
+  // role          Role?           @relation(fields: [roleId], references: [id])
+  role          Role?           @relation(fields: [roleId], references: [id], onDelete: Restrict) // ใช้ onDelete: Restrict เพื่อป้องกันการลบ Role ที่มีผู้ใช้เกี่ยวข้อง
   accounts      Account[]
   sessions      Session[]
   Authenticator Authenticator[]
 
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  deletedAt     DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([email]) //เพิ่ม Index สำหรับฟิลด์ที่ใช้ค้นหาบ่อย
 }
 
 model Role {
-  id   String  @id @default(cuid())
-  name String  @unique
+  id    String @id @default(cuid())
+  name  String @unique
   users User[]
 }
 

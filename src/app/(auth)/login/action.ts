@@ -1,18 +1,18 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { signIn } from "@/lib/auth";
+import { signIn } from "@/lib/auths/auth";
 import bcrypt from "bcryptjs";
 import { loginSchema } from "@/lib/validators/auth";
 
 export type LoginFormState = {
   errors?: {
-    email?: string;
+    name?: string;
     password?: string;
     general?: string;
   };
   values?: {
-    email: string;
+    name: string;
     password?: string;
   };
   success?: boolean;
@@ -20,11 +20,9 @@ export type LoginFormState = {
 
 export async function loginUser(_: unknown, formData: FormData): Promise<LoginFormState> {
   const raw = {
-    email: String(formData.get("email") ?? ""),
+    name: String(formData.get("name") ?? ""),
     password: String(formData.get("password") ?? ""),
   };
-
-  // 1️⃣ Zod validation
   const result = loginSchema.safeParse(raw);
   if (!result.success) {
     const errors: LoginFormState["errors"] = {};
@@ -32,51 +30,47 @@ export async function loginUser(_: unknown, formData: FormData): Promise<LoginFo
       const field = error.path[0] as keyof typeof errors;
       errors[field] = error.message;
     });
-    return { errors, values: { email: raw.email } };
+    return { errors, values: { name: raw.name } };
   }
-
-  // 2️⃣ Check if user exists
-  const user = await prisma.user.findUnique({
-    where: { email: raw.email },
+  const user = await prisma.user.findFirst({
+    where: { name: raw.name },
   });
   if (!user) {
     return {
-      errors: { general: "Invalid email address" },
-      values: { email: raw.email },
+      errors: { general: "Invalid user name" },
+      values: { name: raw.name },
     };
   }
-
-  // 3️⃣ Check password
   if (!user.password) {
     return {
       errors: { general: "Password is required" },
-      values: { email: raw.email },
+      values: { name: raw.name, password: raw.password },
     };
   }
   const isValid = await bcrypt.compare(raw.password, user.password);
   if (!isValid) {
     return {
       errors: { general: "Invalid password" },
-      values: { email: raw.email },
+      values: { name: raw.name, password: raw.password },
     };
   }
 
   // 4️⃣ If successful, sign in
   const res = await signIn("credentials", {
     redirect: false,
-    email: raw.email,
+    name: raw.name,
     password: raw.password,
   });
-
   if (!res || res.error) {
     return {
       errors: { general: "Something went wrong. Please try again." },
-      values: { email: raw.email },
+      values: { name: raw.name },
     };
   }
-
-  // Success
      return { success: true };
+}
 
 
+export async function githubSignInAction() {
+  await signIn("github", { callbackUrl: "/redirect" });
 }

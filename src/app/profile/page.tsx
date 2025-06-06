@@ -1,4 +1,4 @@
-import { auth, signOut } from "@/lib/auth";
+import { auth, signOut } from "@/lib/auths/auth";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -6,7 +6,6 @@ export default async function ProfilePage() {
   if (!session) {
     return <p className="text-center text-red-500 mt-10">Not logged in</p>;
   }
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen space-y-4">
       <h1 className="text-xl font-bold">Profile</h1>
